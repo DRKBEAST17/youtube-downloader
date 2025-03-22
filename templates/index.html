@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Song Downloader</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Song Downloader</h1>
+        <p>Paste your YouTube link below to download the audio as an MP3 file.</p>
+        <div class="input-group">
+            <input type="text" id="youtubeLink" placeholder="Paste YouTube Link Here">
+            <button onclick="downloadSong()">Download</button>
+        </div>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        async function downloadSong() {
+            const link = document.getElementById('youtubeLink').value;
+            document.getElementById('status').innerText = 'Downloading...';
+
+            // Send the link to the backend
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ link })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('status').innerText = 'Download Complete!';
+                // Provide a download link
+                window.location.href = `/download-file/${result.fileUrl}`;
+            } else {
+                document.getElementById('status').innerText = 'Error: ' + result.message;
+            }
+        }
+    </script>
+</body>
+</html>
